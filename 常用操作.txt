@@ -1,0 +1,94 @@
+字符串：子串截取，找到字符串中第一个最后一个特定字符，字符串匹配，字符串转数字，两个和为一个
+数字：数字转字符串
+vector:
+
+字串截取：
+                str.substr(start_index,count)     从start_index开始截取count个字符
+                str.substr(start_index)               从start_index开始截取所有字符
+找到第一个字符：
+                str.find_first_of('.')                     找到str字符串中第一个'.'出现的位置
+                str.find("abc")                           找到str字符串中字串"abc"出现的第一个位置
+字符串s和数字互转：头文件是<sstream>
+                stringstream iss；
+                iss<<s;
+                iss>>temp;
+                注意：多次使用iss转换需要每一次使用iss.clear()清楚数据
+两个字符串和为一个:
+               str1.append(str2)            
+               str.append(5,'.')                        在str后面添加5个'.'
+字符串代替：
+               str.replace(0, 3, "fff")                str的头三个字符换成"fff"
+字符串删除：
+               str.erase(str.begin()+i,str.end());//删除掉str[i]以后的字符（包括str[i]）
+vector:
+               vec.size();
+               vec.push_back(s)
+               vec.clear()                                重复使用vec时使用
+map
+              mp.size();
+              map<char, int>::iterator it = mp.find('b')             //查找关键字为'b'的键值对，
+              map<char, int>::iterator p = mp.begin();             //使用迭代器遍历
+              p != mp.end()；
+              mp.erase(p)；                                                      //删除p指向的键值对
+              mp.erase('a')；                                                    //删除关键字为'a'的键值对
+queue
+             q.push();
+             q.pop();
+             q.empty();
+             q.front();
+             q.back();
+排序：
+             algorithm文件中的sort函数：sort(arr,arr+n)   arr数组，n是数组的大小，compare(const Node &a,const Node &b)
+                                        此外还有：stable_sort(arr,arr+n)  稳定的排序
+控制输出格式
+             printf("%02d\n", 9);//输出09
+             printf("0.3f\n", 3.1415926);//输出3.142
+
+int arr[3]={0}   arr数组里的数分别为0,0,0
+int arr[3]={1}   arr数组里的数分别为1,0,0
+
+getline(cin,str) 当要输入包含空格的字符串时使用
+cin>>str         必须没有空格
+
+ctrl+z 输入EOF，使while(cin>>str)结束循环
+
+输入情况：
+      每一行为一个case无空格：while(cin>>str)              在while循环体内处理每个case
+      每一行为一个case有空格：while(getline(cin,str))     在while循环体内处理每个case
+      多行为一个case并无空格：while(cin>>str)              在while循环体外处理每个case
+      多行为一个case并有空格：while(getline(cin,str))     在while循环体外处理每个case
+
+函数指针
+      typedef void(*ptask)();           ptask p=task1;    p();//task1是函数名，返回值为void，无参数
+
+最大公约数：
+int gcd(int a, int b) {
+	if (b == 0)return a;
+	else return gcd(b, a%b);
+}
+求最小公倍数
+求得A和B的最大公约数是C，则最小公倍数是A*B / C（防止溢出可以写为A/C * B）
+
+判断是不是素数
+bool is_prime(int n){
+    if(i==2||i==3)
+         return true;
+    for(int i=2;i*i<=n;i++){
+        if(n%i==0)
+            return false;
+    }
+    return true;
+}
+
+文件操作<fstream>
+写：
+ofstream out1("D\\abc.txt", ofstream::out | ofstream::app);//打开文件，清空内容，重新写入。ofstream::out指示以写模式打开,ofstream::app指示写操作前定位到文件末尾
+out1<<string;          //把string的内容写到文件里面去
+out1.close();
+
+读：
+ifstream in("D\\abc.txt");
+while (getline(in, s))    //读取每一行
+in.close();
+file.is_open()
+
