@@ -57,6 +57,7 @@ print(list[-1::-1])#可接收第三个参数，表示步长,-1 表示逆向
 
 #元组，(),与列表类似，但元组中的元素不能修改，基本操作与字符串类似
 tuple = ( 'abcd', 786 , 2.23, 'runoob', 70.2  )
+tuple1 = 'abcd', 786 , 2.23, 'runoob', 70.2 #与typle效果一致
 tup1 = (50);print(type(tup1)),#数字类型
 tup2 = (50,);print(type(tup2))#加了逗号后，变成元组类型
 #可以对tuple进行连接组合
@@ -127,8 +128,61 @@ def fibonacci(n): # 生成器函数 - 斐波那契
         counter += 1
 f = fibonacci(10) # f 是一个迭代器，由生成器返回生成
  
-while True:
-    try:
-        print (next(f), end=" ")
-    except StopIteration:
-        sys.exit()
+for x in f:
+    print(x, end=' ')
+else:
+    print()
+
+#函数定义,参数包含必需参数、关键字参数、默认参数和不定长参数
+#必需参数须以正确的顺序传入函数，print_welcome("Runoob")
+#关键字参数允许函数调用时参数的顺序与声明时不一致
+#*vartuple是以元组的形式传入的，若变为**vardict，则是以字典的形式传入,示例见print_welcome1函数
+def print_welcome(name='PanZzhou',age=36,*vartuple, mate='Tang'):
+    print("Welcome:", name, 'age:',age,'mate:',mate,end=' ')
+    print(vartuple)
+
+name="Runoob"
+age=20
+print_welcome(name,age)              #必需参数调用，顺序必须一致
+print_welcome(age=age,name=name)     #关键字参数调用，顺序可以不一致
+print_welcome()                      #name,age使用默认参数
+print_welcome(name,age,1,2,3)        #可变参数，以元组(1,2,3)的形式传入
+print_welcome(name,age,1,2,mate='Ya')#可变参数后面的参数必须是关键字参数,这样才能标记可变参数的结束
+
+#age必须是指定位置参数，不能是关键位置参数,/代表其前面的参数必须是指定位置参数
+def print_welcome1(age,/,name='PanZzhou',**vardict):
+    print(name,vardict)
+print_welcome1(name,a=1,b=2,c=3)     #后三个数据会转换成字典形式
+#print_welcome1(age=20,'Pan',a=1)    age使用了关键字参数，报错
+
+#lambda 表达式
+sum = lambda x,y:x**y
+print('sum:',sum(2,3))
+
+#列表推导式
+vec = [2, 4, 6]
+list = [3*x for x in vec if x>3]
+print(list)
+matrix = [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 12],
+    ]
+print([[row[i] for row in matrix] for i in range(4)]) #实现矩阵的转置
+
+#del
+del matrix[:] #删除列表中的所有元素
+del matrix    #删除matrix变量
+
+#遍历技巧
+#在字典中遍历时，关键字和对应的值可以使用 items() 方法同时解读出来
+knights = {'gallahad': 'the pure', 'robin': 'the brave'}
+for k,v in knights.items():
+    print(k,':',v, end='  ')
+print()
+#在序列中遍历时，索引位置和对应值可以使用 enumerate() 函数同时得到
+for i, v in enumerate(['tic', 'tac', 'toe']):
+    print(i,':',v,end='  ')
+print()
+#反向遍历一个序列，首先指定这个序列，然后调用 reversed() 如:for i in reversed(range(1, 10)):
+#同时遍历两个或更多的序列，可以使用 zip() 组合
