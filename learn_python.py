@@ -1,5 +1,7 @@
-import sys#导入sys模块
-from sys import path,argv#导入sys模块成员
+import sys#导入sys模块,最后面得必须是包
+from sys import path,argv#导入sys模块成员，最后面得可以是包，函数，变量
+import math
+import pickle
 
 word='这是一个字符串'; sentence="这是一个字符串"
 paragraph="""这也是一个字符串，
@@ -186,3 +188,104 @@ for i, v in enumerate(['tic', 'tac', 'toe']):
 print()
 #反向遍历一个序列，首先指定这个序列，然后调用 reversed() 如:for i in reversed(range(1, 10)):
 #同时遍历两个或更多的序列，可以使用 zip() 组合
+
+#类
+class people:
+    name='' #基本属性
+    age=0  #基本属性
+    __weight=0  #__表示此为私有属性
+    def __init__(self,n,a,w):#构造函数，实例化对象时自动调用此函数
+        self.name=n
+        self.age=a
+        self.__weight=n
+    def speak(self):
+        print(f'{self.name}说:我{self.age}岁')#使用fstring格式化输出
+p=people('Pan',24,60)
+p.speak()
+
+#继承
+class student(people):
+    grade=''
+    def __init__(self,n,a,w,g):
+        people.__init__(self,n,a,w)#调用父类的构造函数
+        self.grade=g
+    def speak(self):
+        print(f'{self.name}说:我{self.age}岁，{self.grade}年级')
+s=student('Pan',24,60,13)
+s.speak()
+
+#多重继承与私有方法
+class speaker:
+    name=''
+    topic=''
+    def __init__(self,n,t):
+        self.name=n
+        self.topic=t
+    def speak(self):
+        print(f'大家好，我是{self.name}，我演讲的题目是{self.topic}')
+
+class sample(speaker,student):
+    def __init__(self,n,a,w,g,t):
+        speaker.__init__(self,n,t)
+        student.__init__(self,n,a,w,g)
+    def __foo(self):     #函数名前带"__"，表示此函数是私有函数
+        print("这是私有方法")
+    def foo(self):
+        print('这是公有方法')
+        self.__foo()     #类方法内调用其他类函数，不能是__foo(self),应该是self.__foo()
+s=sample('Pan',24,60,13,'Python')
+s.speak()#两个父类都有speak函数，则调用位置靠前的父类的函数;
+         #当然也可以在子类中重写此函数，则调用时调用的就是子类重写的函数
+s.foo()
+#s.__foo(),调用报错，不能直接在外部调用私有方法
+
+#类的专有方法
+#__init__ : 构造函数,__del__ : 析构函数,__len__: 获得长度,
+#_cmp__: 比较运算,__call__: 函数调用,__add__: 加运算等
+
+#__name__属性， 每个模块都有一个__name__属性，当其值是'__main__'时，表明该模块自身在运行，
+#否则是被引入。当其他模块import此模块时，__name__就不是__main__
+if __name__ == '__main__':
+    print("此模块自身在运行")
+
+L=dir(sys)   #dir()函数是内置的，返回被引入模块所包含定义的所有名称，以列表返还
+print(L[0])
+
+#包，管理组织不同模块的目录，只有包含__init__.py文件的目录才是一个包
+#__init__.py中可以有一个__all__变量，当使用from package import *时，就会
+#读取__all__列表变量，导入其中添加的模块，包作者增加删除模块后，得更新__all__
+
+#输出
+name='Pan'
+age=24
+print(f'{name}说:我{age}岁')#使用fstring格式化输出
+print("%s说:我%d岁"%(name,age))#使用操作符符格式化输出
+print("{0}说:我{1:3d}岁".format(name,age))#使用format函数，此方法应多代替上述两种方法
+print("{name}说:我{age:5d}岁".format(name=name,age=age))#age:5d表示age输出占5位
+print('PI等于{:.3f}'.format(math.pi)) #小数输出
+
+#输入,交互窗口输入:Tools->SublimeREPL->Python->Python:RUN current file
+#str=input("请输入:")
+
+#读写文件
+f=open('learn_git.cpp','r',encoding="utf-8")
+#str=f.read()，读整个文件
+#f.write()
+#f.tell(), 返回文件对象当前所处得位置
+#f.seek(offset,from_what), 改变文件当前位置,offset是偏移，from_what为0表示文件开头，1表示当前位置，2表示文件结尾
+#file.flush()，直接把内部缓冲区的数据立刻写入文件
+str=f.readline()#读其中一行
+print(str)
+f.close()
+
+#pickle 模块，python的pickle模块实现了基本的数据序列和反序列化。
+data1 = {'a': [1, 2.0, 3, 4+6j],
+         'b': ('string', u'Unicode string'),
+         'c': None}
+output=open('obj.txt','wb')
+pickle.dump(data1,output)  #序列化后保存到文件
+output.close()
+pkl_file=open('obj.txt','rb')
+data1=pickle.load(pkl_file)
+print(data1)
+pkl_file.close()
