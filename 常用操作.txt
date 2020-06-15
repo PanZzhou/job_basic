@@ -16,6 +16,7 @@ vector:
 两个字符串和为一个:
                str1.append(str2)            
                str.append(5,'.')                        在str后面添加5个'.'
+               str+='a'                                   在str后面添加一个字符'a',不能用str.append('a')
 字符串代替：
                str.replace(0, 3, "fff")                str的头三个字符换成"fff"
 字符串删除：
