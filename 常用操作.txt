@@ -93,3 +93,7 @@ while (getline(in, s))    //读取每一行
 in.close();
 file.is_open()
 
+常用宏：
+INT_MAX:2147483647
+INT_MIN:-2147483648
+
