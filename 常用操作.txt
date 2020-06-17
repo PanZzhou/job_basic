@@ -38,6 +38,11 @@ queue
              q.empty();
              q.front();
              q.back();
+stack
+            s.push()
+            s.pop()
+            s.empty()
+            s.top()
 排序：
              algorithm文件中的sort函数：sort(arr,arr+n)   arr数组，n是数组的大小，compare(const Node &a,const Node &b)
                                         此外还有：stable_sort(arr,arr+n)  稳定的排序
