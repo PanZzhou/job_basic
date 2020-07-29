@@ -135,6 +135,20 @@ for x in f:
 else:
     print()
 
+#装饰器
+def decorator(func):
+    def wrapper(*args,**kwargs):
+        print('I am doing some boring work before executing func()')
+        print(func.__name__)
+        func(args,kwargs)
+        print('I am doing some boring work after executing func()')
+    return wrapper
+
+@decorator  #@后面的名字要和装饰器的函数名相同，这里相当于:people=decorator(people),people就实际是decorator函数中的wrapper函数了
+def people(name,age):
+    print("{0}说:我{1}岁".format(name,age))
+people('yan',21)
+
 #函数定义,参数包含必需参数、关键字参数、默认参数和不定长参数
 #必需参数须以正确的顺序传入函数，print_welcome("Runoob")
 #关键字参数允许函数调用时参数的顺序与声明时不一致
