@@ -1685,6 +1685,10 @@ Ehcache是一种广泛使用的开源Java分布式缓存。主要面向通用缓
 
 
 
+# github：mybatis-study
+
+具体的学习过程和代码在自己的github上，叫mybatis-study
+
 
 
 # 练习：24道练习题实践！
