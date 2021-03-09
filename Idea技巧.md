@@ -18,7 +18,7 @@ list.for可以快速写出一个循环。（list是一个List对象）
 
 “psvm“+回车 就等于输入” public static void main(String[] args) { }”
 
-
+alt+拖动选中不同行：可以同时编辑选中的行
 
 # web
 
@@ -40,6 +40,15 @@ list.for可以快速写出一个循环。（list是一个List对象）
 
 
 
+# 配置文件
+
+
+
+![image-20210309180927646](C:\Users\FlameZ\AppData\Roaming\Typora\typora-user-images\image-20210309180927646.png)
+
+不同语言的不同配置文件设置过程如上。这样可以同时编辑多个文件，使其配置名相同，但是可以设置不同的的值。
+
 # 改bug
 
 ![image-20210304173807553](C:\Users\FlameZ\AppData\Roaming\Typora\typora-user-images\image-20210304173807553.png)
+
