@@ -30,7 +30,7 @@ alt+拖动选中不同行：可以同时编辑选中的行
 
 注意：多个子项目的，在运行不同子项目时都要改变下Tomcat的配置，让Tomcat改为运行此子项目。
 
-![image-20210302151206097](C:\Users\FlameZ\AppData\Roaming\Typora\typora-user-images\image-20210302151206097.png)
+![image-20210302151206097](Idea技巧.assets/image-20210302151206097.png)
 
  选中之前的子项目，然后点击左下角"-"号，然后再点击fix选择对应子项目即可
 
@@ -44,11 +44,11 @@ alt+拖动选中不同行：可以同时编辑选中的行
 
 
 
-![image-20210309180927646](C:\Users\FlameZ\AppData\Roaming\Typora\typora-user-images\image-20210309180927646.png)
+![image-20210309180927646](Idea技巧.assets/image-20210309180927646.png)
 
 不同语言的不同配置文件设置过程如上。这样可以同时编辑多个文件，使其配置名相同，但是可以设置不同的的值。
 
 # 改bug
 
-![image-20210304173807553](C:\Users\FlameZ\AppData\Roaming\Typora\typora-user-images\image-20210304173807553.png)
+![image-20210304173807553](Idea技巧.assets/image-20210304173807553.png)
 
