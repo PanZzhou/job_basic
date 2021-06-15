@@ -1,0 +1,293 @@
+# MyBatisPlus概述
+
+mybatisPlus可以节省我们大量工作时间，所有的CRUD代码它都可以自动化完成。简化MyBatis！
+
+- JPA
+- tk-mapper
+- MyBatisPlus
+
+> ## 特性：
+
+- **无侵入**：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑
+- **损耗小**：启动即会自动注入基本 CURD，性能基本无损耗，直接面向对象操作（BaseMapper）
+- **强大的 CRUD 操作**：内置通用 Mapper、通用 Service，仅仅通过少量配置即可实现单表大部分 CRUD 操作，更有强大的条件构造器，满足各类使用需求（以后简单的CRUD，自动帮你生成）
+- **支持 Lambda 形式调用**：通过 Lambda 表达式，方便的编写各类查询条件，无需再担心字段写错
+- **支持主键自动生成**：支持多达 4 种主键策略（内含分布式唯一 ID 生成器 - Sequence），可自由配置，完美解决主键问题
+- **支持 ActiveRecord 模式**：支持 ActiveRecord 形式调用，实体类只需继承 Model 类即可进行强大的 CRUD 操作
+- **支持自定义全局通用操作**：支持全局通用方法注入（ Write once, use anywhere ）
+- **内置代码生成器**：采用代码或者 Maven 插件可快速生成 Mapper 、 Model 、 Service 、 Controller 层代码，支持模板引擎，更有超多自定义配置等您来使用（自动生成代码）
+- **内置分页插件**：基于 MyBatis 物理分页，开发者无需关心具体操作，配置好插件之后，写分页等同于普通 List 查询
+- **分页插件支持多种数据库**：支持 MySQL、MariaDB、Oracle、DB2、H2、HSQL、SQLite、Postgre、SQLServer 等多种数据库
+- **内置性能分析插件**：可输出 Sql 语句以及其执行时间，建议开发测试时启用该功能，能快速揪出慢查询
+- **内置全局拦截插件**：提供全表 delete 、 update 操作智能分析阻断，也可自定义拦截规则，预防误操作
+
+# 快速入门
+
+1、创建数据库mybatis_plus
+
+2、创建user表
+
+```sql
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user
+(
+	id BIGINT(20) NOT NULL COMMENT '主键ID',
+	name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
+	age INT(11) NULL DEFAULT NULL COMMENT '年龄',
+	email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
+	PRIMARY KEY (id)
+);
+-- 真实开发中，version(乐观锁)、deleted（逻辑删除）、gmt_create、gmt_modified在创建表中是必须拥有的
+INSERT INTO user (id, name, age, email) VALUES
+(1, 'Jone', 18, 'test1@baomidou.com'),
+(2, 'Jack', 20, 'test2@baomidou.com'),
+(3, 'Tom', 28, 'test3@baomidou.com'),
+(4, 'Sandy', 21, 'test4@baomidou.com'),
+(5, 'Billie', 24, 'test5@baomidou.com');
+```
+
+3、编写项目，使用springboot新建项目。
+
+4、导入依赖
+
+```xml
+<!--        mybatisplus,这个是自己开发的，并非官方-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+<!--        数据库驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.23</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.18</version>
+        </dependency>
+```
+
+尽量不要同时导入MyBatis和MyBatisPlus依赖！
+
+5、编写配置文件
+
+```sql
+#mysql5 和 mysql8的驱动不同，且8要增加时区的配置
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/mybatis_plus?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+spring.datasource.username=root
+spring.datasource.password=123456
+```
+
+//6、MyBatis方式:pojo-dao(需要连接mybatis，配置mapper.xml文件)-service-controller
+
+6、使用了MyBatisPlus：
+
+- pojo
+
+  ```java
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public class User {
+      private Long id;
+      private String name;
+      private Integer age;
+      private String email;
+  }
+  ```
+
+  
+
+- mapper接口
+
+  ```java
+  //再对应的Mapper上面集成基本的类BaseMapper
+  @Repository//代表持久层
+  public interface UserMapper extends BaseMapper<User> {
+      //所有的CRUD操作都已经完成了，不需要再写xml文件
+  }
+  ```
+
+  User要传入BaseMapper的泛型中去。
+
+  另外：需要再主启动类上增加 `@MapperScan("com.kuang.mapper") 扫描mapper`
+
+- 测试
+
+  ```java
+  @Autowired
+      private UserMapper userMapper;
+      @Test
+      void contextLoads() {
+          List<User> users = userMapper.selectList(null);
+          users.forEach(System.out::println);
+      }
+  ```
+
+  > 思考：sql怎么来的？方法哪里来的？都是MyBatisPlus
+
+# 配置日志
+
+我们所有的sql现在是不可见的，我们希望知道它是怎么执行的，所以我们必须要看日志！
+
+开发过程可以开启日志，上线之后就关闭它。
+
+配置文件增加配置：
+
+```properties
+#配置日志
+mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
+```
+
+运行结果如下：
+
+![image-20210615115107097](mybatisplus.assets/image-20210615115107097.png)
+
+可以看到出现了sql语句！
+
+# CRUD扩展
+
+## Insert
+
+测试插入代码：
+
+```java
+User user = new User();
+        user.setAge(12);
+        user.setName("panpan");
+        user.setEmail("hahaha");
+        userMapper.insert(user);
+```
+
+结果
+
+![image-20210615115515474](mybatisplus.assets/image-20210615115515474.png)
+
+可以看到自动帮我们生成了一个id！
+
+>数据库插入的id的默认值为：全局唯一id
+
+## 主键生成策略
+
+uuid、自增id、雪花算法、redis、zookeeper！
+
+
+
+>默认ID_WORKER 全局唯一ID
+
+分布式系统唯一id生成方案：https://www.cnblogs.com/haoxinyue/p/5208136.html
+
+雪花算法：
+
+snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0。可以几乎保证全球唯一！
+
+
+
+> 主键自增
+
+我们需要配置主键自增：
+
+1. 实体类字段上 `@TableId(type= IdType.AUTO)`
+
+2. 数据库字段一定要是自增的！
+
+   修改后运行插入代码，可以看到数据插入到数据库，并且id自增！
+
+<img src="mybatisplus.assets/image-20210615203958696.png" alt="image-20210615203958696" style="zoom:50%;" />
+
+> 其余的源码解释
+
+```java
+public enum IdType {
+    AUTO(0),//数据库自增
+    NONE(1),//未设置主键
+    INPUT(2),//手动输入
+    ID_WORKER(3),//默认的全局唯一id
+    UUID(4),//全局唯一id  uuid
+    ID_WORKER_STR(5);//ID_WORKER的字符串表示
+}
+```
+
+
+
+## Update
+
+```java
+@Test
+    public void testUpdate(){
+        User user = new User();
+        //通过条件动态拼接sql
+        user.setId(5L);
+        user.setName("panpan");
+        //注意参数是个user对象，不是一个id！
+        userMapper.updateById(user);
+    }
+```
+
+运行前后数据对比：
+
+<img src="mybatisplus.assets/image-20210615204643397.png" alt="image-20210615204643397" style="zoom: 67%;" />
+
+<img src="mybatisplus.assets/image-20210615204717779.png" alt="image-20210615204717779" style="zoom:67%;" />
+
+## 自动填充
+
+创建时间，修改时间。。。这些个操作一遍都是自动化完成的，我们不希望手动更新！
+
+所有的数据库表：gmt_create、gmt_modified几乎所有的表都要配置上，需要自动化！
+
+> 方式一：数据库级别
+
+1、在表中新增create_time, update_time字段, update_time字段需要勾选更新选项
+
+2、在此测试插入方法，我们需要先把实体类同步
+
+```java
+private Date createTime;
+private Date updateTime;
+```
+
+
+
+> 方式二：代码级别
+
+1、删除(复原)我们在方式一中设置的字段默认值和更新选项
+
+2、实体类字段属性上增加注解！
+
+```java
+    @TableField(fill= FieldFill.INSERT)//插入时调用handler
+    private Date createTime;
+    @TableField(fill= FieldFill.INSERT_UPDATE)//插入和更新时调用handler
+    private Date updateTime;
+```
+
+3、编写处理器来处理这个注解
+
+```java
+@Slf4j
+@Component//一定不要忘记把处理器加到IOC容器中去
+public class MyHandler implements MetaObjectHandler {
+    //插入时的填充策略
+    @Override
+    public void insertFill(MetaObject metaObject) {
+        log.info("start insert fill...");
+        this.setFieldValByName("createTime",new Date(),metaObject);
+        this.setFieldValByName("updateTime",new Date(),metaObject);
+    }
+    //更新时的填充策略
+    @Override
+    public void updateFill(MetaObject metaObject) {
+        log.info("start update fill");
+        this.setFieldValByName("updateTime",new Date(),metaObject);
+    }
+}
+
+```
+
+4、测试插入，更新。
