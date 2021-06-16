@@ -172,7 +172,7 @@ User user = new User();
 
 >数据库插入的id的默认值为：全局唯一id
 
-## 主键生成策略
+### 主键生成策略
 
 uuid、自增id、雪花算法、redis、zookeeper！
 
@@ -235,13 +235,13 @@ public enum IdType {
 
 <img src="mybatisplus.assets/image-20210615204717779.png" alt="image-20210615204717779" style="zoom:67%;" />
 
-## 自动填充
+### 自动填充
 
 创建时间，修改时间。。。这些个操作一遍都是自动化完成的，我们不希望手动更新！
 
 所有的数据库表：gmt_create、gmt_modified几乎所有的表都要配置上，需要自动化！
 
-> 方式一：数据库级别
+> 方式一：数据库级别（工作中不允许你改数据库）
 
 1、在表中新增create_time, update_time字段, update_time字段需要勾选更新选项
 
@@ -291,3 +291,150 @@ public class MyHandler implements MetaObjectHandler {
 ```
 
 4、测试插入，更新。
+
+
+
+### 乐观锁
+
+面试进场问到乐观锁和悲观锁。
+
+> 乐观锁：总是人为不会出现问题，无论干什么都不去上锁！如果出现了问题，再次更新值测试。一般使用version、newversion字段，每次更新携带版本号，来判断数据有没有更新。
+>
+> 悲观锁：总是认为总会出现问题，无论干什么都会上锁！再去操作。
+
+![image-20210616093125283](mybatisplus.assets/image-20210616093125283.png)
+
+测试：
+
+1、数据库表user加version字段
+
+2、实体类user加对应字段
+
+```java
+@Version//乐观锁version注解
+private Integer version;
+```
+
+3、注册组件
+
+新建config包和MyBatisPlusConfig文件，相关的MybatisPlus配置可以在这个配置类中配置，包括`@MapperScan("com.kuang.mapper")`
+
+```java
+@MapperScan("com.kuang.mapper")//扫描包
+@EnableTransactionManagement//事务的注解
+@Configuration//配置类
+public class MyBatisPlusConfig {
+    //注册乐观锁插件
+    @Bean
+    public OptimisticLockerInterceptor optimisticLockerInterceptor() {
+        return new OptimisticLockerInterceptor();
+    }
+}
+```
+
+注意，@MapperScan原本是在主启动类上，可以把他移到这个配置类中，这样可以减少主启动类上的注解数量，方便查看。
+
+4、测试
+
+<img src="mybatisplus.assets/image-20210616103743488.png" alt="image-20210616103743488" style="zoom:67%;" />
+
+可以看到version字段变成了2
+
+## select
+
+```java
+        //单个查询
+        User user = userMapper.selectById(1L);
+        System.out.println(user);
+        //批量查询
+        List<User> users = userMapper.selectBatchIds(Arrays.asList(1, 2, 3));
+        users.forEach(System.out::println);
+        //条件查询之一，使用map
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name","panpan");
+        userMapper.selectByMap(map);
+```
+
+### 分页查询
+
+1、原始的limit进行分页
+
+2、pageHelper第三方插件
+
+3、MybatisPlus也内置了分页插件！
+
+使用：在之前的`MyBatisPlusConfig.java`配置类中增加分页拦截器！
+
+```java
+    //分页插件
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        return new PaginationInterceptor();
+    }
+```
+
+测试：
+
+```java
+        //参数一：当前页
+        //参数二：页面大小
+        Page<User> page = new Page<>(1,5);
+        userMapper.selectPage(page, null);
+        page.getRecords().forEach(System.out::println);
+```
+
+## delete
+
+```java
+        //id删除
+        userMapper.deleteById(1404648530473099267L);
+        //id批量删除
+        userMapper.deleteBatchIds(Arrays.asList(1404648530473099266L,1404648530473099265L));
+        //条件删除
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name","panpan");
+        userMapper.deleteByMap(map);
+```
+
+### 逻辑删除
+
+> 物理删除：从数据库中直接删除
+>
+> 逻辑删除：在数据库中没有被溢出，而是通过一个变量让它失效！
+
+比如管理员可以查看被删除的记录！防止数据的丢失，类似于回收站。
+
+测试：
+
+1、在数据表中增加deleted字段，默认为0
+
+2、修改实体类User
+
+```java
+@TableLogic//逻辑删除注解
+private Integer deleted;
+```
+
+3、配置文件增加配置
+
+```properties
+mybatis-plus.global-config.db-config.logic-delete-value= 1 # 逻辑已删除值(默认为 1)
+mybatis-plus.global-config.db-config.logic-not-delete-value= 0 # 逻辑未删除值(默认为 0)
+```
+
+4、配置类增加逻辑删除配置
+
+```java
+    //逻辑删除
+    @Bean
+    public ISqlInjector sqlInjector(){
+        return new LogicSqlInjector();
+    }
+```
+
+
+
+5、测试
+
+
+
