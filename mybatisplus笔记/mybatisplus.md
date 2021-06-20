@@ -204,7 +204,7 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
 
 ```java
 public enum IdType {
-    AUTO(0),//数据库自增
+    AUTO(0),//数据库自增，要把数据库表字段设置为自增
     NONE(1),//未设置主键
     INPUT(2),//手动输入
     ID_WORKER(3),//默认的全局唯一id
@@ -306,7 +306,7 @@ public class MyHandler implements MetaObjectHandler {
 
 测试：
 
-1、数据库表user加version字段
+1、数据库表user加version字段，**默认值为1**
 
 2、实体类user加对应字段
 
@@ -406,7 +406,7 @@ public class MyBatisPlusConfig {
 
 测试：
 
-1、在数据表中增加deleted字段，默认为0
+1、在数据表中增加deleted字段，**默认为0**
 
 2、修改实体类User
 
@@ -436,5 +436,43 @@ mybatis-plus.global-config.db-config.logic-not-delete-value= 0 # 逻辑未删除
 
 5、测试
 
+这里记录一个坑爹的bug：如果按照上面的5步来的话，自动生成的逻辑删除sql语句如下所示：
+
+![image-20210620201229300](mybatisplus.assets/image-20210620201229300.png)
+
+没错，居然出现了乱码！这个的根源在于第三步的配置文件，这个配置是我们从官网上直接拷贝过来的，每一行都有对应的注释，而这些注释再配置文件中显示是绿的，就是说这些已经不再是注释，而是我们配置的属性值了！
+
+```properties
+# 逻辑已删除值(默认为 1)
+mybatis-plus.global-config.db-config.logic-delete-value= 1
+# 逻辑未删除值(默认为 0)
+mybatis-plus.global-config.db-config.logic-not-delete-value= 0
+```
+
+改成上面这样就可以了。
+
+## 性能分析插件
+
+在平时的开发中，会员到一些**慢sql**。怎么处理这些慢sql呢？
+
+- 测试
+- druid
+- 性能分析插件
+
+MybatisPlus自带有性能分析插件，如果超过这个时间就停止运行。
+
+1、导入插件
+
+2、测试使用。
+
+新版中已经被移除，推荐使用外部的性能分析工具。
+
+## 条件构造器
+
+十分重要，写一些复杂的sql，就可以用这些warpper来替代。
 
 
+
+
+
+## 代码自动生成器
