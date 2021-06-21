@@ -471,8 +471,182 @@ MybatisPlus自带有性能分析插件，如果超过这个时间就停止运行
 
 十分重要，写一些复杂的sql，就可以用这些warpper来替代。
 
+> ![image-20210621101010591](mybatisplus.assets/image-20210621101010591.png)
 
+```java
+@Test
+    void contextLoads() {
+        //查询name不为空的用户，并且邮箱不为空，年龄大于等于19
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.isNotNull("name")
+                .isNotNull("email")
+                .ge("age",19);
+        userMapper.selectList(wrapper).forEach(System.out::println);
+    }
+```
 
+```java
+@Test
+    void test2() {
+        //查询name不为空的用户，并且邮箱不为空，年龄大于等于12
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("name","panpan");
+        //查询一个数据。要查询多个数据时使用LIst或者Map
+        User user = userMapper.selectOne(wrapper);
+        System.out.println(user);
+    }
+```
 
+```java
+@Test
+    void test3() {
+        //查询20岁到30岁之间的用户数
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.between("age",20,30);
+        Integer i = userMapper.selectCount(wrapper);//查询结果数
+        System.out.println(i);
+    }
+```
+
+```java
+@Test
+    void test4(){
+        //模糊查询，查询名字中不包含z的用户，邮箱中以t开头
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.notLike("name","z")
+                .likeRight("email","t");
+        List<Map<String, Object>> maps = userMapper.selectMaps(wrapper);
+        maps.forEach(System.out::println);
+    }
+```
+
+```java
+void test5(){
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        //id在子查询中查出来,内敛查询
+        wrapper.inSql("id","select id from user where id<3");
+        List<Object> objects = userMapper.selectObjs(wrapper);
+        objects.forEach(System.out::println);
+    }
+```
+
+```java
+@Test
+    void test6(){
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        //通过id进行排序
+        wrapper.orderByDesc("id");
+        List<User> users = userMapper.selectList(wrapper);
+        users.forEach(System.out::println);
+    }
+```
+
+还有其他很多条件构造器，可以查看官网。
 
 ## 代码自动生成器
+
+AutoGenerator可以快速生成Entity、Mapper、Mapper XML、Service、Controller等各个模块的代码！
+
+1、建立各种数据库表（数据库要规范，包含乐观锁，逻辑删除，插入和更新记录字段）
+
+2、项目导入MybatisPlus插件
+
+```xml
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-generator</artifactId>
+    <version>3.4.1</version>
+</dependency>
+```
+
+默认的模板引擎是Velocity，如果需要其他模板引擎需要导入依赖，如FreeMarker：
+
+```xml
+<dependency>
+    <groupId>org.freemarker</groupId>
+    <artifactId>freemarker</artifactId>
+    <version>2.3.31</version>
+</dependency>
+```
+
+然后在第三步中增加模板引擎的设置。
+
+3、在项目中编写下面代码并运行（不同项目的设置信息可能有变化，需要修改）。
+
+```java
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
+import com.baomidou.mybatisplus.generator.config.GlobalConfig;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
+import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.po.TableFill;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import java.util.ArrayList;
+// 代码自动生成器
+public class dd {
+    public static void main(String[] args) {
+        // 需要构建一个 代码自动生成器 对象
+        AutoGenerator mpg = new AutoGenerator();
+        // 配置策略
+        // 1、全局配置
+        GlobalConfig gc = new GlobalConfig();
+        String projectPath = System.getProperty("user.dir");
+        gc.setOutputDir(projectPath+"/src/main/java");
+        gc.setAuthor("狂神说");
+        gc.setOpen(false);
+        gc.setFileOverride(false); // 是否覆盖
+        gc.setServiceName("%sService"); // 去Service的I前缀
+        gc.setIdType(IdType.ID_WORKER);
+        gc.setDateType(DateType.ONLY_DATE);
+        gc.setSwagger2(true);
+        mpg.setGlobalConfig(gc);
+
+        //2、设置数据源
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setUrl("jdbc:mysql://localhost:3306/kuang_community? useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+        dsc.setUsername("root");
+        dsc.setPassword("123456");
+        dsc.setDbType(DbType.MYSQL);
+        mpg.setDataSource(dsc);
+
+        //3、包的配置
+        PackageConfig pc = new PackageConfig();
+        pc.setModuleName("blog");
+        pc.setParent("com.kuang");
+        pc.setEntity("entity");
+        pc.setMapper("mapper");
+        pc.setService("service");
+        pc.setController("controller");
+        mpg.setPackageInfo(pc);
+
+        //4、策略配置
+        StrategyConfig strategy = new StrategyConfig();
+        strategy.setInclude("blog_tags","course","links","sys_settings","user_record"," user_say"); // 设置要映射的表名
+        strategy.setNaming(NamingStrategy.underline_to_camel);
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);
+        strategy.setEntityLombokModel(true); // 自动lombok；
+        strategy.setLogicDeleteFieldName("deleted");
+        // 自动填充配置
+        TableFill gmtCreate = new TableFill("gmt_create", FieldFill.INSERT);
+        TableFill gmtModified = new TableFill("gmt_modified", FieldFill.INSERT_UPDATE);
+        ArrayList<TableFill> tableFills = new ArrayList<>();
+        tableFills.add(gmtCreate);
+        tableFills.add(gmtModified);
+        strategy.setTableFillList(tableFills);
+        // 乐观锁
+        strategy.setVersionFieldName("version");
+        strategy.setRestControllerStyle(true);
+        strategy.setControllerMappingHyphenStyle(true); //localhost:8080/hello_id_2
+        mpg.setStrategy(strategy);
+        
+        mpg.execute(); //执行
+    }
+}
+```
+
